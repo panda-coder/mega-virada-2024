@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jogos JSON Display</title>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 50%;
+        margin: 20px 0;
+        font-size: 18px;
+        text-align: center;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 10px;
+    }
+    .duque {
+        background-color: aqua;
+    }
+    .terno {
+        background-color:brown;
+    }
+
+    .quadra {
+        background-color:chocolate;
+    }
+
+    .quina {
+        background-color:darkcyan;
+    }
+
+    .mega {
+        background-color:goldenrod;
+    }
+</style>
+</head>
+<body>
+
+<h2>Jogos JSON Display</h2>
+
+<!-- Filter Textboxes -->
+<div>
+    Filter by Numbers:
+    <input type="text" id="filter1" placeholder="Number 1">
+    <input type="text" id="filter2" placeholder="Number 2">
+    <input type="text" id="filter3" placeholder="Number 3">
+    <input type="text" id="filter4" placeholder="Number 4">
+    <input type="text" id="filter5" placeholder="Number 5">
+    <input type="text" id="filter6" placeholder="Number 6">
+</div>
+
+<!-- Table to Display JSON Content -->
+<table id="jogosTable">
+    <thead>
+        <tr>
+            <th>Numbers</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    // Fetching JSON data
+    fetch('jogos.json')
+    .then(response => response.json())
+    .then(data => {
+        const jogos = data.sena;
+        const tableBody = document.getElementById('jogosTable').getElementsByTagName('tbody')[0];
+        
+        // Populate table with JSON data
+        jogos.forEach(numbers => {
+            const row = tableBody.insertRow();
+            const cell = row.insertCell(0);
+            cell.textContent = numbers.join(', ');
+        });
+
+        function countIntersection(array1, inputArray) {
+            // Use the filter method to get elements from array1 that are present in inputArray
+            const intersection = array1.filter(item => inputArray.includes(item));
+            
+            // Return the length of the intersection array
+            return intersection.length;
+        }
+
+        const mapClass = {
+            2: "duque", 3: "terno", 4: "quadra", 5: "quina", 6: "mega"
+        }
+
+        // Filtering logic
+        const filterInputs = ['filter1', 'filter2', 'filter3', 'filter4', 'filter5', 'filter6'];
+        filterInputs.forEach(inputId => {
+            document.getElementById(inputId).addEventListener('input', function() {
+                const filters = filterInputs.map(id => document.getElementById(id).value.trim()).filter(val => val);
+                const rows = tableBody.getElementsByTagName('tr');
+                
+                for (let i = 0; i < rows.length; i++) {
+                    const numbers = rows[i].getElementsByTagName('td')[0].textContent.split(', ');
+                    //const shouldDisplay = filters.every(filter => numbers.includes(filter));
+                    nIntersect = countIntersection(numbers, filters) 
+                    const shouldDisplay = nIntersect >= 2
+                    rows[i].className = mapClass[nIntersect]
+                    rows[i].style.display = shouldDisplay ? '' : 'none';
+                }
+            });
+        });
+    })
+    .catch(error => console.error('Error fetching JSON:', error));
+</script>
+
+</body>
+</html>
